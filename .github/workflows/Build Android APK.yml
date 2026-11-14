@@ -17,18 +17,18 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Build APK Automatically
+    - name: Build APK directly
       run: |
-        # التحقق من وجود مجلد app أو إنشاء بنية أساسية إن لم تكن موجودة
         if [ -d "app" ]; then
           cd app
         fi
-        gradle wrapper --gradle-version 8.5 || gradle init --type basic --dsl groovy --test-framework none --incubating
         chmod +x gradlew || true
         if [ -f "./gradlew" ]; then
           ./gradlew assembleDebug
         else
-          gradle assembleDebug
+          gradle wrapper
+          chmod +x gradlew
+          ./gradlew assembleDebug
         fi
 
     - name: Upload APK artifact
