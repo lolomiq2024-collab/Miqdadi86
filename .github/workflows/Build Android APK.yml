@@ -17,13 +17,19 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Build APK directly
+    - name: Prepare and Build APK
       run: |
-        if [ -d "app" ]; then
-          cd app
+        # البحث عن ملفات المشروع وإنشاء بيئة بناء سليمة إذا لم تكن موجودة
+        if [ ! -f "build.gradle" ] && [ ! -f "app/build.gradle" ]; then
+          gradle init --type basic --dsl groovy --test-framework none --incubating || true
         fi
-        chmod +x gradlew || true
-        if [ -f "./gradlew" ]; then
+        
+        if [ -f "gradlew" ]; then
+          chmod +x gradlew
+          ./gradlew assembleDebug
+        elif [ -f "app/gradlew" ]; then
+          cd app
+          chmod +x gradlew
           ./gradlew assembleDebug
         else
           gradle wrapper
